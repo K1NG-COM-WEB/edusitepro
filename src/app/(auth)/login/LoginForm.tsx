@@ -16,7 +16,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="w-full rounded-lg bg-amber-600 px-4 py-3 font-semibold text-white hover:bg-amber-700 disabled:opacity-50"
+      className="w-full rounded-lg bg-amber-600 px-4 py-3 sm:py-3.5 text-base sm:text-lg font-semibold text-white hover:bg-amber-700 active:bg-amber-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation"
     >
       {pending ? 'Signing in...' : 'Sign in'}
     </button>
@@ -27,9 +27,9 @@ export function LoginForm({ signIn }: LoginFormProps) {
   const [state, formAction] = useFormState(signIn, undefined);
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} className="space-y-4 sm:space-y-5">
       {state?.error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-3 sm:p-4 text-sm text-red-800">
           {state.error}
         </div>
       )}
@@ -44,7 +44,7 @@ export function LoginForm({ signIn }: LoginFormProps) {
           type="email"
           required
           autoComplete="email"
-          className="w-full rounded-lg border border-stone-300 px-4 py-3 text-stone-900 focus:border-amber-500 focus:outline-none"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2.5 sm:px-4 sm:py-3 text-base text-stone-900 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 focus:outline-none transition-colors"
         />
       </div>
 
@@ -58,7 +58,7 @@ export function LoginForm({ signIn }: LoginFormProps) {
           type="password"
           required
           autoComplete="current-password"
-          className="w-full rounded-lg border border-stone-300 px-4 py-3 text-stone-900 focus:border-amber-500 focus:outline-none"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2.5 sm:px-4 sm:py-3 text-base text-stone-900 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 focus:outline-none transition-colors"
         />
       </div>
 

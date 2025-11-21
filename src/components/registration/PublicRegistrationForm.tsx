@@ -821,7 +821,7 @@ export function PublicRegistrationForm({
       {organizationId === 'ba79097c-1b93-4b48-bcbe-df73878ab4d1' && (
         <div className="mb-6 overflow-hidden rounded-lg border-2 border-purple-400 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 p-1 shadow-xl">
           <div className="rounded-md bg-white p-5 dark:bg-gray-800">
-            <div>
+            <div className="w-full">
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 <div className="flex items-center gap-2">
                   <div className="rounded-full bg-gradient-to-r from-purple-600 to-pink-600 p-2">
@@ -847,7 +847,7 @@ export function PublicRegistrationForm({
               </p>
                 <div className="rounded-lg bg-gradient-to-r from-purple-100 to-pink-100 p-3 dark:from-purple-900/30 dark:to-pink-900/30">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                    <div>
+                    <div className="w-full">
                       <p className="text-sm font-semibold text-gray-900 dark:text-white">
                         Use code: <span className="font-mono text-base sm:text-lg text-purple-600 dark:text-purple-400">WELCOME2026</span>
                       </p>
@@ -903,7 +903,7 @@ export function PublicRegistrationForm({
             />
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Email Address <span className="text-red-500">*</span>
             </label>
@@ -918,7 +918,7 @@ export function PublicRegistrationForm({
             />
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Phone Number <span className="text-red-500">*</span>
             </label>
@@ -933,7 +933,7 @@ export function PublicRegistrationForm({
             />
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Occupation
             </label>
@@ -947,7 +947,7 @@ export function PublicRegistrationForm({
             />
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Employer
             </label>
@@ -961,7 +961,7 @@ export function PublicRegistrationForm({
             />
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Work Phone
             </label>
@@ -999,7 +999,7 @@ export function PublicRegistrationForm({
                 <div className="space-y-2">
                   {nearbySchools.map((school) => (
                     <div key={school.id} className="flex items-center justify-between rounded bg-white p-2 text-sm dark:bg-gray-800">
-                      <div>
+                      <div className="w-full">
                         <div className="font-medium text-gray-900 dark:text-white">{school.name}</div>
                         <div className="text-xs text-gray-600 dark:text-gray-400">
                           {school.city}, {school.province}
@@ -1054,7 +1054,7 @@ export function PublicRegistrationForm({
             />
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Email Address
             </label>
@@ -1068,7 +1068,7 @@ export function PublicRegistrationForm({
             />
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Phone Number
             </label>
@@ -1132,7 +1132,7 @@ export function PublicRegistrationForm({
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               First Name <span className="text-red-500">*</span>
             </label>
@@ -1147,7 +1147,7 @@ export function PublicRegistrationForm({
             />
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Last Name <span className="text-red-500">*</span>
             </label>
@@ -1162,7 +1162,7 @@ export function PublicRegistrationForm({
             />
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Date of Birth <span className="text-red-500">*</span>
             </label>
@@ -1177,7 +1177,7 @@ export function PublicRegistrationForm({
             />
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Gender <span className="text-red-500">*</span>
             </label>
@@ -1195,7 +1195,7 @@ export function PublicRegistrationForm({
             </select>
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Nationality
             </label>
@@ -1209,7 +1209,7 @@ export function PublicRegistrationForm({
             />
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Home Language
             </label>
@@ -1237,7 +1237,7 @@ export function PublicRegistrationForm({
             />
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Allergies
             </label>
@@ -1251,7 +1251,7 @@ export function PublicRegistrationForm({
             />
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Current Medication
             </label>
@@ -1292,7 +1292,7 @@ export function PublicRegistrationForm({
         </h2>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Doctor's Name
             </label>
@@ -1306,7 +1306,7 @@ export function PublicRegistrationForm({
             />
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Doctor's Phone
             </label>
@@ -1334,7 +1334,7 @@ export function PublicRegistrationForm({
         </h2>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Contact Name <span className="text-red-500">*</span>
             </label>
@@ -1349,7 +1349,7 @@ export function PublicRegistrationForm({
             />
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Contact Phone <span className="text-red-500">*</span>
             </label>
@@ -1397,7 +1397,7 @@ export function PublicRegistrationForm({
             <div className="mb-6">
               <h3 className="mb-3 text-lg font-semibold text-blue-800 dark:text-blue-300">Mother&apos;s Details</h3>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div>
+                <div className="w-full">
                   <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Mother&apos;s Full Name
                   </label>
@@ -1410,7 +1410,7 @@ export function PublicRegistrationForm({
                     placeholder="Jane Doe"
                   />
                 </div>
-                <div>
+                <div className="w-full">
                   <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Mother&apos;s Phone
                   </label>
@@ -1423,7 +1423,7 @@ export function PublicRegistrationForm({
                     placeholder="+27 82 123 4567"
                   />
                 </div>
-                <div>
+                <div className="w-full">
                   <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Mother&apos;s Email
                   </label>
@@ -1436,7 +1436,7 @@ export function PublicRegistrationForm({
                     placeholder="jane@example.com"
                   />
                 </div>
-                <div>
+                <div className="w-full">
                   <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Mother&apos;s Occupation
                   </label>
@@ -1465,10 +1465,10 @@ export function PublicRegistrationForm({
               </div>
             </div>
 
-            <div>
+            <div className="w-full">
               <h3 className="mb-3 text-lg font-semibold text-blue-800 dark:text-blue-300">Father&apos;s Details</h3>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div>
+                <div className="w-full">
                   <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Father&apos;s Full Name
                   </label>
@@ -1481,7 +1481,7 @@ export function PublicRegistrationForm({
                     placeholder="John Doe"
                   />
                 </div>
-                <div>
+                <div className="w-full">
                   <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Father&apos;s Phone
                   </label>
@@ -1494,7 +1494,7 @@ export function PublicRegistrationForm({
                     placeholder="+27 82 765 4321"
                   />
                 </div>
-                <div>
+                <div className="w-full">
                   <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Father&apos;s Email
                   </label>
@@ -1507,7 +1507,7 @@ export function PublicRegistrationForm({
                     placeholder="john@example.com"
                   />
                 </div>
-                <div>
+                <div className="w-full">
                   <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Father&apos;s Occupation
                   </label>
@@ -1547,7 +1547,7 @@ export function PublicRegistrationForm({
             </h2>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
+              <div className="w-full">
                 <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Toilet Trained?
                 </label>
@@ -1564,7 +1564,7 @@ export function PublicRegistrationForm({
                 </select>
               </div>
 
-              <div>
+              <div className="w-full">
                 <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Immunization Record Status
                 </label>
@@ -1679,7 +1679,7 @@ export function PublicRegistrationForm({
         </h2>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Assigned Class <span className="text-blue-500 text-xs">(Auto-assigned based on age)</span>
             </label>
@@ -1704,7 +1704,7 @@ export function PublicRegistrationForm({
             </p>
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Preferred Start Date <span className="text-red-500">*</span>
             </label>
@@ -1719,7 +1719,7 @@ export function PublicRegistrationForm({
             />
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Previous School (if applicable)
             </label>
@@ -1733,7 +1733,7 @@ export function PublicRegistrationForm({
             />
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Reason for Transfer
             </label>

@@ -1,13 +1,12 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/auth';
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = createClient();
 
   // Check if user is authenticated
   const {
@@ -56,7 +55,7 @@ export default async function AdminLayout({
   return (
     <div className="min-h-screen bg-gray-50">
       <AdminNavigation session={session} profile={profile} />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         {children}
       </main>
     </div>
@@ -65,50 +64,73 @@ export default async function AdminLayout({
 
 function AdminNavigation({ session, profile }: any) {
   return (
-    <nav className="bg-white border-b border-gray-200">
+    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center gap-8">
-            <a href="/admin" className="text-xl font-bold text-amber-600">
-              EduSitePro Admin
+        <div className="flex justify-between items-center h-14 sm:h-16">
+          {/* Left: Logo and Desktop Nav */}
+          <div className="flex items-center gap-4 sm:gap-8 flex-1">
+            <a href="/admin" className="text-lg sm:text-xl font-bold text-amber-600 whitespace-nowrap">
+              EduSitePro
             </a>
             
-            <div className="hidden md:flex items-center gap-6">
-              <a href="/admin" className="text-gray-700 hover:text-amber-600">
+            <div className="hidden lg:flex items-center gap-4 xl:gap-6">
+              <a href="/admin" className="text-sm text-gray-700 hover:text-amber-600 transition-colors">
                 Dashboard
               </a>
-              <a href="/admin/registrations" className="text-gray-700 hover:text-amber-600">
+              <a href="/admin/registrations" className="text-sm text-gray-700 hover:text-amber-600 transition-colors">
                 Registrations
               </a>
-              <a href="/admin/centres" className="text-gray-700 hover:text-amber-600">
+              <a href="/admin/centres" className="text-sm text-gray-700 hover:text-amber-600 transition-colors">
                 Centres
               </a>
-              <a href="/admin/pages" className="text-gray-700 hover:text-amber-600">
+              <a href="/admin/pages" className="text-sm text-gray-700 hover:text-amber-600 transition-colors">
                 Pages
               </a>
-              <a href="/admin/settings" className="text-gray-700 hover:text-amber-600">
+              <a href="/admin/settings" className="text-sm text-gray-700 hover:text-amber-600 transition-colors">
                 Settings
               </a>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-sm font-medium text-gray-900">
-                {profile?.full_name || 'Admin User'}
+          {/* Right: User info and sign out */}
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="hidden sm:block text-right">
+              <p className="text-xs sm:text-sm font-medium text-gray-900 truncate max-w-[120px] sm:max-w-none">
+                {profile?.full_name || 'Admin'}
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 truncate max-w-[120px] sm:max-w-none">
                 {session.user.email}
               </p>
             </div>
             <form action="/api/auth/signout" method="POST">
               <button
                 type="submit"
-                className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900"
+                className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm text-gray-700 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Sign Out
               </button>
             </form>
+          </div>
+        </div>
+
+        {/* Mobile Navigation Menu */}
+        <div className="lg:hidden border-t border-gray-200 py-3 overflow-x-auto">
+          <div className="flex items-center gap-4 min-w-max">
+            <a href="/admin" className="text-sm text-gray-700 hover:text-amber-600 whitespace-nowrap">
+              Dashboard
+            </a>
+            <a href="/admin/registrations" className="text-sm text-gray-700 hover:text-amber-600 whitespace-nowrap">
+              Registrations
+            </a>
+            <a href="/admin/centres" className="text-sm text-gray-700 hover:text-amber-600 whitespace-nowrap">
+              Centres
+            </a>
+            <a href="/admin/pages" className="text-sm text-gray-700 hover:text-amber-600 whitespace-nowrap">
+              Pages
+            </a>
+            <a href="/admin/settings" className="text-sm text-gray-700 hover:text-amber-600 whitespace-nowrap">
+              Settings
+            </a>
           </div>
         </div>
       </div>
