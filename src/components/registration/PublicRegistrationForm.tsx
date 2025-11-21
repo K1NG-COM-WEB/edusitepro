@@ -46,6 +46,8 @@ export interface OrganizationBranding {
   registration_message?: string;
   min_age?: number;
   max_age?: number;
+  terms_and_conditions_url?: string;
+  terms_and_conditions_text?: string;
 }
 
 const getInitialFormState = () => ({
@@ -1361,145 +1363,6 @@ export function PublicRegistrationForm({
               </div>
             </div>
           </section>
-
-          {/* Transport & Additional Services (configurable subsections) */}
-          {(formConfig.showTransport || formConfig.showMealPlan) && (
-          <section className="mb-8 bg-amber-50 dark:bg-amber-900/10 p-6 rounded-lg border-2 border-amber-200 dark:border-amber-800">
-            <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold text-gray-900 dark:text-white">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 font-bold text-amber-600 dark:bg-amber-900 dark:text-amber-300">
-                🚌
-              </span>
-              Transport & Additional Services
-            </h2>
-
-            <div className="grid grid-cols-1 gap-4">
-              {formConfig.showTransport && (
-                <div>
-                  <label className="flex cursor-pointer items-center gap-2">
-                    <input
-                      type="checkbox"
-                      name="transportRequired"
-                      checked={formData.transportRequired}
-                      onChange={handleChange}
-                      className="h-4 w-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
-                    />
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Transport Required
-                    </span>
-                  </label>
-                </div>
-              )}
-
-              {formConfig.showTransport && formData.transportRequired && (
-                <>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Pickup Address
-                    </label>
-                    <input
-                      type="text"
-                      name="transportPickupAddress"
-                      value={formData.transportPickupAddress}
-                      onChange={handleChange}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                      placeholder="Morning pickup address"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Drop-off Address
-                    </label>
-                    <input
-                      type="text"
-                      name="transportDropoffAddress"
-                      value={formData.transportDropoffAddress}
-                      onChange={handleChange}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                      placeholder="Afternoon drop-off address"
-                    />
-                  </div>
-                </>
-              )}
-
-              {formConfig.showMealPlan && (
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Preferred Meal Plan
-                  </label>
-                  <select
-                    name="preferredMealPlan"
-                    value={formData.preferredMealPlan}
-                    onChange={handleChange}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  >
-                    <option value="">Select meal plan</option>
-                    <option value="full">Full Meals (Breakfast, Lunch, Snacks)</option>
-                    <option value="lunch-only">Lunch Only</option>
-                    <option value="snacks-only">Snacks Only</option>
-                    <option value="none">No Meals (Bring Own Food)</option>
-                  </select>
-                </div>
-              )}
-
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Religious Considerations
-                </label>
-                <input
-                  type="text"
-                  name="religiousConsiderations"
-                  value={formData.religiousConsiderations}
-                  onChange={handleChange}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  placeholder="e.g., Muslim, Christian, Hindu"
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Cultural Considerations
-                </label>
-                <input
-                  type="text"
-                  name="culturalConsiderations"
-                  value={formData.culturalConsiderations}
-                  onChange={handleChange}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  placeholder="Any cultural practices we should respect"
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Authorized Pickup Persons (Comma separated names)
-                </label>
-                <textarea
-                  name="authorizedPickupPersons"
-                  value={formData.authorizedPickupPersons}
-                  onChange={handleChange}
-                  rows={2}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  placeholder="e.g., Grandmother Mary Smith, Uncle Peter Jones"
-                />
-              </div>
-
-              <div>
-                <label className="flex cursor-pointer items-center gap-2">
-                  <input
-                    type="checkbox"
-                    name="photoIDRequired"
-                    checked={formData.photoIDRequired}
-                    onChange={handleChange}
-                    className="h-4 w-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
-                  />
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Require Photo ID for all pickups (Enhanced Security)
-                  </span>
-                </label>
-              </div>
-            </div>
-          </section>
-          )}
         </>
       )}
 
@@ -1758,6 +1621,64 @@ export function PublicRegistrationForm({
                 and confirm that all information provided is accurate <span className="text-red-500">*</span>
               </label>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Download App Section */}
+      <section className="border-t border-gray-200 pt-6 dark:border-gray-700">
+        <div className="mb-6 rounded-lg border border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50 p-6 dark:border-purple-800 dark:from-purple-900/20 dark:to-pink-900/20">
+          <h3 className="mb-3 text-lg font-semibold text-purple-900 dark:text-purple-100">
+            📱 Get the EduDash Pro App
+          </h3>
+          <p className="mb-4 text-sm text-purple-800 dark:text-purple-200">
+            After your registration is approved, you'll receive login details to access our mobile app where you can:
+          </p>
+          <ul className="mb-4 space-y-1 text-sm text-purple-700 dark:text-purple-300">
+            <li className="flex items-center gap-2">
+              <Check className="h-4 w-4 text-green-600" />
+              View homework and lessons
+            </li>
+            <li className="flex items-center gap-2">
+              <Check className="h-4 w-4 text-green-600" />
+              Track your child's progress
+            </li>
+            <li className="flex items-center gap-2">
+              <Check className="h-4 w-4 text-green-600" />
+              Chat with teachers
+            </li>
+            <li className="flex items-center gap-2">
+              <Check className="h-4 w-4 text-green-600" />
+              Manage payments and fees
+            </li>
+          </ul>
+          <div className="flex flex-wrap gap-3">
+            {process.env.NEXT_PUBLIC_ANDROID_STORE_URL && (
+              <a
+                href={process.env.NEXT_PUBLIC_ANDROID_STORE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800"
+              >
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.5,12.92 20.16,13.19L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z" />
+                </svg>
+                Google Play
+              </a>
+            )}
+            {process.env.NEXT_PUBLIC_IOS_STORE_URL && (
+              <a
+                href={process.env.NEXT_PUBLIC_IOS_STORE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800"
+              >
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.71,19.5C17.88,20.74 17,21.95 15.66,21.97C14.32,22 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.1,22C7.79,22.05 6.8,20.68 5.96,19.47C4.25,17 2.94,12.45 4.7,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.1,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.1 19.56,8.82C19.47,8.88 17.39,10.1 17.41,12.63C17.44,15.65 20.06,16.66 20.09,16.67C20.06,16.74 19.67,18.11 18.71,19.5M13,3.5C13.73,2.67 14.94,2.04 15.94,2C16.07,3.17 15.6,4.35 14.9,5.19C14.21,6.04 13.07,6.7 11.95,6.61C11.8,5.46 12.36,4.26 13,3.5Z" />
+                </svg>
+                App Store
+              </a>
+            )}
           </div>
         </div>
       </section>
