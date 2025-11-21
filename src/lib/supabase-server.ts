@@ -1,9 +1,21 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { headers } from 'next/headers';
 import { NextRequest } from 'next/server';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+/**
+ * Create a simple Supabase client for server-side operations
+ * This is the default export for basic usage in API routes
+ */
+export function createClient() {
+  return createSupabaseClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      persistSession: false,
+    },
+  });
+}
 
 /**
  * Create a Supabase client for server-side operations with tenant context
@@ -14,7 +26,7 @@ export async function createServerSupabaseClient() {
 
   const tenantId = headersList.get('x-tenant-id');
 
-  const client = createClient(supabaseUrl, supabaseAnonKey, {
+  const client = createSupabaseClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       persistSession: false,
     },
@@ -38,7 +50,7 @@ export async function createServerSupabaseClient() {
 export function getSupabaseClient(request: NextRequest) {
   const tenantId = request.headers.get('x-tenant-id');
 
-  const client = createClient(supabaseUrl, supabaseAnonKey, {
+  const client = createSupabaseClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       persistSession: false,
     },

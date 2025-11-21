@@ -12,14 +12,6 @@ export default function Home() {
       <section className="bg-gradient-to-br from-stone-800 to-stone-900 px-4 py-20 text-white md:py-32">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center">
-            {/* Schools Live Badge */}
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 px-4 py-2">
-              <span className="text-sm font-bold uppercase tracking-wide">🏫 Schools</span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2 py-0.5 text-xs font-bold">
-                LIVE
-              </span>
-            </div>
-
             <div className="mb-4 inline-block rounded-full bg-amber-600 px-4 py-2 text-sm font-semibold">
               🎉 Limited Time: Save up to 33% with Bulk Packages
             </div>

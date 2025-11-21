@@ -459,7 +459,6 @@ export function PublicRegistrationForm({
         // Preschool-specific data
         ...(organizationBranding?.organization_type === 'preschool' && {
           preschool_details: {
-            birth_certificate_number: formData.birthCertificateNumber,
             immunization_record: formData.immunizationRecord,
             mother: {
               name: formData.motherName,
