@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
+import { generateParentWelcomeEmail } from '@/lib/email-templates/parent-welcome';
 
 /**
  * POST /api/registrations/approve
@@ -148,9 +149,60 @@ export async function POST(request: NextRequest) {
       console.error('Registration update error:', updateError);
     }
 
-    // 10. Send welcome email (TODO: Implement email service)
-    // For now, return the credentials in the response
-    // In production, send via email service (SendGrid, Resend, etc.)
+    // 10. Send welcome email
+    try {
+      // Get organization details for school name
+      const { data: orgData } = await supabase
+        .from('organizations')
+        .select('name')
+        .eq('id', registration.organization_id)
+        .single();
+
+      const schoolName = orgData?.name || 'Young Eagles Education Centre';
+
+      // Generate email content
+      const emailContent = generateParentWelcomeEmail({
+        parentName: registration.parent_name,
+        parentEmail: registration.parent_email,
+        tempPassword: tempPassword,
+        studentName: `${studentData.first_name} ${studentData.last_name}`,
+        studentId: studentId,
+        schoolName: schoolName,
+        androidAppUrl: process.env.NEXT_PUBLIC_ANDROID_STORE_URL || 'https://play.google.com/store/apps/details?id=com.edudashpro',
+        iosAppUrl: process.env.NEXT_PUBLIC_IOS_STORE_URL,
+      });
+
+      // Call send-email Edge Function
+      const emailResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/send-email`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+          },
+          body: JSON.stringify({
+            to: registration.parent_email,
+            subject: emailContent.subject,
+            html: emailContent.html,
+            text: emailContent.text,
+            organization_id: registration.organization_id,
+            confirmed: true, // Explicit confirmation required by Edge Function
+          }),
+        }
+      );
+
+      if (!emailResponse.ok) {
+        const emailError = await emailResponse.json();
+        console.error('Failed to send welcome email:', emailError);
+        // Don't fail the approval if email fails - parent can still access app
+      } else {
+        console.log('Welcome email sent successfully to:', registration.parent_email);
+      }
+    } catch (emailError) {
+      console.error('Email sending error:', emailError);
+      // Don't fail the approval if email fails
+    }
 
     return NextResponse.json({
       success: true,
@@ -158,7 +210,6 @@ export async function POST(request: NextRequest) {
       data: {
         parent: {
           email: registration.parent_email,
-          temporaryPassword: tempPassword, // Remove this in production - send via email only
           appDownloadLinks: {
             android: process.env.NEXT_PUBLIC_ANDROID_STORE_URL,
             ios: process.env.NEXT_PUBLIC_IOS_STORE_URL,

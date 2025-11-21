@@ -148,7 +148,8 @@ export function PublicRegistrationForm({
 
   // Check if all required fields are filled
   const isFormValid = () => {
-    const required = [
+    // Check required text fields
+    const requiredTextFields = [
       formData.guardianName,
       formData.guardianEmail,
       formData.guardianPhone,
@@ -157,19 +158,19 @@ export function PublicRegistrationForm({
       formData.studentLastName,
       formData.studentDob,
       formData.studentGender,
-      formData.termsAccepted,
     ];
 
     // Add conditional required fields
     if (formConfig.showEmergencyContact) {
-      required.push(
+      requiredTextFields.push(
         formData.emergencyContactName,
         formData.emergencyContactPhone,
         formData.emergencyContactRelationship
       );
     }
 
-    return required.every((field) => field !== '' && field !== false);
+    // All text fields must be non-empty AND terms must be accepted
+    return requiredTextFields.every((field) => field && field.trim() !== '') && formData.termsAccepted === true;
   };
 
   // Fetch live spots remaining for Young Eagles promo
@@ -794,13 +795,13 @@ export function PublicRegistrationForm({
       {organizationId === 'ba79097c-1b93-4b48-bcbe-df73878ab4d1' && (
         <div className="mb-6 overflow-hidden rounded-lg border-2 border-purple-400 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 p-1 shadow-xl">
           <div className="rounded-md bg-white p-5 dark:bg-gray-800">
-            <div className="flex items-start gap-4">
-              <div className="rounded-full bg-gradient-to-r from-purple-600 to-pink-600 p-3">
-                <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="flex-shrink-0 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 p-2 md:p-3">
+                <svg className="h-5 w-5 md:h-6 md:w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
                 </svg>
               </div>
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <div className="mb-2 flex flex-wrap items-center gap-2">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                     🎉 Limited Time Offer!
