@@ -5,12 +5,12 @@ export default function YoungEaglesRegistration() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100">
       <PublicRegistrationForm
-        organizationId="6b92f8a5-48e7-4865-b85f-4b92c174e0ef"
+        organizationId="ba79097c-1b93-4b48-bcbe-df73878ab4d1"
         schoolCode="YE-2026"
         schoolName="Young Eagles Preschool"
         slug="young-eagles"
         initialBranding={{
-          id: '6b92f8a5-48e7-4865-b85f-4b92c174e0ef',
+          id: 'ba79097c-1b93-4b48-bcbe-df73878ab4d1',
           name: 'Young Eagles Preschool',
           slug: 'young-eagles',
           organization_type: 'preschool',

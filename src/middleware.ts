@@ -1,4 +1,4 @@
-import { type CookieOptions,createServerClient } from '@supabase/ssr';
+import { type CookieOptions, createServerClient } from '@supabase/ssr';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
@@ -65,7 +65,7 @@ export async function middleware(request: NextRequest) {
   // For localhost development, use Young Eagles as default tenant
   if (hostname.startsWith('localhost') || hostname.startsWith('127.0.0.1')) {
     const response = NextResponse.next();
-    const tenantId = '6b92f8a5-48e7-4865-b85f-4b92c174e0ef'; // Young Eagles
+    const tenantId = 'ba79097c-1b93-4b48-bcbe-df73878ab4d1'; // Young Eagles
     response.headers.set('x-tenant-id', tenantId);
     console.log('[Middleware] Set tenant ID:', tenantId, '(Young Eagles)');
     return response;
