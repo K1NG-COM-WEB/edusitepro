@@ -1,0 +1,21 @@
+{
+  "name": "EduSitePro - School Registration Platform",
+  "short_name": "EduSitePro",
+  "description": "Multi-tenant registration platform for educational institutions",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#8B5CF6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/app-icons/yehc_logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "scope": "/",
+  "lang": "en-US"
+}
