@@ -511,7 +511,7 @@ export function PublicRegistrationForm({
       };
 
       // Insert registration request with all fields
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('registration_requests')
         .insert({
           organization_id: organizationId,
