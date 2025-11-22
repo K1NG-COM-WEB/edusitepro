@@ -223,11 +223,11 @@ function UploadPaymentContent() {
               <dl className="grid grid-cols-2 gap-3 text-sm">
                 <div>
                   <dt className="text-blue-700 font-medium">Bank</dt>
-                  <dd className="text-blue-900">Capitec Bank</dd>
+                  <dd className="text-blue-900">First National Bank (FNB)</dd>
                 </div>
                 <div>
                   <dt className="text-blue-700 font-medium">Account Number</dt>
-                  <dd className="text-blue-900 font-mono">1441072267</dd>
+                  <dd className="text-blue-900 font-mono">62777403181</dd>
                 </div>
                 <div>
                   <dt className="text-blue-700 font-medium">Branch Code</dt>
