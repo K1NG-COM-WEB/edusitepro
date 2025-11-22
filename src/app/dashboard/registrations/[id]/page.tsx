@@ -4,6 +4,7 @@ import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, User, Mail, Phone, MapPin, Calendar, FileText, CreditCard, CheckCircle, XCircle } from 'lucide-react';
 import RegistrationActions from '@/components/dashboard/RegistrationActions';
+import ResendEmailButton from '@/components/dashboard/ResendEmailButton';
 
 interface Registration {
   id: string;
@@ -70,21 +71,27 @@ export default async function RegistrationDetailPage({
             <ArrowLeft className="h-4 w-4" />
             Back to Registrations
           </Link>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-3">
             <h1 className="text-2xl font-bold text-stone-900">
               Registration Details
             </h1>
-            <span
-              className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${
-                registration.status === 'pending'
-                  ? 'bg-yellow-100 text-yellow-800'
-                  : registration.status === 'approved'
-                  ? 'bg-green-100 text-green-800'
-                  : 'bg-red-100 text-red-800'
-              }`}
-            >
-              {registration.status}
-            </span>
+            <div className="flex items-center gap-3">
+              <ResendEmailButton 
+                registrationId={registration.id}
+                guardianEmail={registration.guardian_email}
+              />
+              <span
+                className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${
+                  registration.status === 'pending'
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : registration.status === 'approved'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-red-100 text-red-800'
+                }`}
+              >
+                {registration.status}
+              </span>
+            </div>
           </div>
         </div>
 

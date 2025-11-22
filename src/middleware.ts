@@ -86,9 +86,14 @@ export async function middleware(request: NextRequest) {
       console.log('[Middleware] Set tenant ID:', tenantId, `(${org.name} - custom domain)`);
     }
   }
-  // Check for subdomain pattern (slug.edusitepro.org.za)
-  else if (hostname.includes('.edusitepro.org.za') && !hostname.startsWith('www.')) {
-    const slug = hostname.split('.')[0];
+  // Check for subdomain pattern (slug.edusitepro.org.za or edusitepro.edudashpro.org.za)
+  else if (hostname.includes('.edusitepro.org.za') || hostname === 'edusitepro.edudashpro.org.za') {
+    let slug = hostname.split('.')[0];
+    
+    // Handle edusitepro.edudashpro.org.za as the main tenant
+    if (hostname === 'edusitepro.edudashpro.org.za') {
+      slug = 'youngeagles'; // Map to Young Eagles organization
+    }
     
     const { data: org } = await supabase
       .from('organizations')
@@ -100,6 +105,19 @@ export async function middleware(request: NextRequest) {
       tenantId = org.id;
       tenantSlug = org.slug;
       console.log('[Middleware] Set tenant ID:', tenantId, `(${org.name} - subdomain)`);
+    } else if (slug !== 'www') {
+      // If no org found by slug, try to find any organization (for backward compatibility)
+      const { data: anyOrg } = await supabase
+        .from('organizations')
+        .select('id, slug, name')
+        .limit(1)
+        .single();
+      
+      if (anyOrg) {
+        tenantId = anyOrg.id;
+        tenantSlug = anyOrg.slug;
+        console.log('[Middleware] Fallback tenant ID:', tenantId, `(${anyOrg.name})`);
+      }
     }
   }
 
