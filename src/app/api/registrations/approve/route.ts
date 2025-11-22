@@ -64,6 +64,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check payment verification
+    if (!registration.payment_verified) {
+      return NextResponse.json(
+        { error: 'Payment must be verified before approval. Please verify the proof of payment first.' },
+        { status: 400 }
+      );
+    }
+
     // 3. Create parent account in Supabase Auth
     const tempPassword = generateSecurePassword();
     

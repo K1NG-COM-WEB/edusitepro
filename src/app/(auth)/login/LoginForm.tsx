@@ -4,9 +4,10 @@ import { useFormState, useFormStatus } from 'react-dom';
 
 interface LoginFormProps {
   signIn: (
-    prevState: { error?: string } | undefined,
+    prevState: { error?: string; redirectTo?: string } | undefined,
     formData: FormData,
-  ) => Promise<{ error?: string }>;
+  ) => Promise<{ error?: string; redirectTo?: string }>;
+  redirectTo?: string;
 }
 
 function SubmitButton() {
@@ -23,7 +24,7 @@ function SubmitButton() {
   );
 }
 
-export function LoginForm({ signIn }: LoginFormProps) {
+export function LoginForm({ signIn, redirectTo }: LoginFormProps) {
   const [state, formAction] = useFormState(signIn, undefined);
 
   return (
@@ -33,6 +34,8 @@ export function LoginForm({ signIn }: LoginFormProps) {
           {state.error}
         </div>
       )}
+
+      <input type="hidden" name="redirectTo" value={redirectTo || '/admin'} />
 
       <div>
         <label htmlFor="email" className="mb-2 block text-sm font-medium text-stone-700">

@@ -606,13 +606,47 @@ export function PublicRegistrationForm({
 
       if (error) throw error;
 
+      // Generate payment reference
+      const paymentReference = `REG${Date.now()}${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
+
+      // Update registration with payment reference
+      await supabase
+        .from('registration_requests')
+        .update({ payment_reference: paymentReference })
+        .eq('id', data.id);
+
       // Store campaign info before resetting form
       if (campaignInfo && campaignInfo.valid) {
         setSubmittedWithDiscount(campaignInfo);
       }
 
-      // TODO: Send confirmation email via API route
-      // await fetch('/api/notifications/send', { ... });
+      // Send confirmation email to parent
+      try {
+        const emailResponse = await fetch('/api/registrations/send-confirmation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            parentEmail: formData.guardianEmail,
+            parentName: formData.guardianName,
+            studentName: `${formData.studentFirstName} ${formData.studentLastName}`,
+            schoolName: schoolName || 'Young Eagles Preschool',
+            registrationFee: finalAmount,
+            discountApplied: discountAmount > 0,
+            discountAmount: discountAmount,
+            registrationId: data.id,
+            paymentReference: paymentReference,
+          }),
+        });
+
+        if (!emailResponse.ok) {
+          console.error('Failed to send confirmation email');
+        }
+      } catch (emailError) {
+        console.error('Email sending error:', emailError);
+        // Don't fail the registration if email fails
+      }
 
       setSubmitted(true);
       console.log('Registration submitted successfully!');
@@ -865,6 +899,54 @@ export function PublicRegistrationForm({
           </div>
         </div>
       )}
+
+      {/* Monthly Fee Structure Banner */}
+      <div className="mb-6 overflow-hidden rounded-xl border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50 shadow-lg dark:border-purple-700 dark:from-purple-900/20 dark:to-pink-900/20">
+        <div className="px-4 py-5 sm:p-6">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-600 text-white">
+              💰
+            </div>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+              Monthly Fee Structure
+            </h3>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="rounded-lg bg-white dark:bg-gray-800 p-4 shadow-sm border border-purple-100 dark:border-purple-800">
+              <p className="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-1">
+                6 months - 1 year
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                R850<span className="text-sm font-normal text-gray-500">/month</span>
+              </p>
+            </div>
+            
+            <div className="rounded-lg bg-white dark:bg-gray-800 p-4 shadow-sm border border-purple-100 dark:border-purple-800">
+              <p className="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-1">
+                1 - 3 years
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                R720<span className="text-sm font-normal text-gray-500">/month</span>
+              </p>
+            </div>
+            
+            <div className="rounded-lg bg-white dark:bg-gray-800 p-4 shadow-sm border border-purple-100 dark:border-purple-800">
+              <p className="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-1">
+                4 - 6 years
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                R680<span className="text-sm font-normal text-gray-500">/month</span>
+              </p>
+            </div>
+          </div>
+          
+          <p className="mt-4 text-xs text-gray-600 dark:text-gray-400 flex items-start gap-2">
+            <span className="text-blue-500">ℹ️</span>
+            <span>Monthly fees are charged in addition to the one-time registration fee. Bank transfers are free. ATM deposits and cash payments incur a R20 processing fee.</span>
+          </p>
+        </div>
+      </div>
 
       <div className="mb-6">
         <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white">

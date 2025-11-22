@@ -2,52 +2,115 @@ import { type CookieOptions, createServerClient } from '@supabase/ssr';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-import { getCentreByDomain } from '@/lib/tenancy';
-
 export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
   const path = request.nextUrl.pathname;
 
   console.log('[Middleware] Request:', path, '| Host:', hostname);
 
-  // Check authentication for admin routes
-  if (path.startsWith('/admin')) {
-    let response = NextResponse.next({
-      request: {
-        headers: request.headers,
-      },
-    });
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
 
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return request.cookies.get(name)?.value;
-          },
-          set(name: string, value: string, options: CookieOptions) {
-            request.cookies.set({ name, value, ...options });
-            response = NextResponse.next({
-              request: {
-                headers: request.headers,
-              },
-            });
-            response.cookies.set({ name, value, ...options });
-          },
-          remove(name: string, options: CookieOptions) {
-            request.cookies.set({ name, value: '', ...options });
-            response = NextResponse.next({
-              request: {
-                headers: request.headers,
-              },
-            });
-            response.cookies.set({ name, value: '', ...options });
-          },
+  // Create Supabase client for auth and tenant lookup
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value;
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          request.cookies.set({ name, value, ...options });
+          response.cookies.set({ name, value, ...options });
+        },
+        remove(name: string, options: CookieOptions) {
+          request.cookies.set({ name, value: '', ...options });
+          response.cookies.set({ name, value: '', ...options });
         },
       },
-    );
+    },
+  );
 
+  // Detect tenant from domain
+  let tenantId: string | null = null;
+  let tenantSlug: string | null = null;
+
+  // For localhost development - detect tenant from user's organization
+  if (hostname.startsWith('localhost') || hostname.startsWith('127.0.0.1')) {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (session) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('organization_id')
+        .eq('id', session.user.id)
+        .single();
+
+      if (profile?.organization_id) {
+        tenantId = profile.organization_id;
+        
+        // Get the org slug for the header
+        const { data: org } = await supabase
+          .from('organizations')
+          .select('slug')
+          .eq('id', tenantId)
+          .single();
+        
+        tenantSlug = org?.slug || null;
+        console.log('[Middleware] Localhost - Tenant mode from user profile:', tenantId);
+      } else {
+        console.log('[Middleware] Localhost - Platform Admin mode (no organization)');
+      }
+    } else {
+      console.log('[Middleware] Localhost - No session (unauthenticated)');
+    }
+  } 
+  // Check for custom domain in organizations table
+  else if (!hostname.includes('edusitepro')) {
+    const { data: org } = await supabase
+      .from('organizations')
+      .select('id, slug, name')
+      .eq('custom_domain', hostname)
+      .eq('domain_verified', true)
+      .single();
+
+    if (org) {
+      tenantId = org.id;
+      tenantSlug = org.slug;
+      console.log('[Middleware] Set tenant ID:', tenantId, `(${org.name} - custom domain)`);
+    }
+  }
+  // Check for subdomain pattern (slug.edusitepro.org.za)
+  else if (hostname.includes('.edusitepro.org.za') && !hostname.startsWith('www.')) {
+    const slug = hostname.split('.')[0];
+    
+    const { data: org } = await supabase
+      .from('organizations')
+      .select('id, slug, name')
+      .eq('slug', slug)
+      .single();
+
+    if (org) {
+      tenantId = org.id;
+      tenantSlug = org.slug;
+      console.log('[Middleware] Set tenant ID:', tenantId, `(${org.name} - subdomain)`);
+    }
+  }
+
+  // Set tenant headers if found
+  if (tenantId) {
+    response.headers.set('x-tenant-id', tenantId);
+    response.headers.set('x-organization-slug', tenantSlug || '');
+  }
+
+  // Check authentication for admin routes
+  if (path.startsWith('/admin') || path.startsWith('/dashboard')) {
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -59,52 +122,32 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    return response;
-  }
+    // Get user profile to check role
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, organization_id')
+      .eq('id', session.user.id)
+      .single();
 
-  // For localhost development, use Young Eagles as default tenant
-  if (hostname.startsWith('localhost') || hostname.startsWith('127.0.0.1')) {
-    const response = NextResponse.next();
-    const tenantId = 'ba79097c-1b93-4b48-bcbe-df73878ab4d1'; // Young Eagles
-    response.headers.set('x-tenant-id', tenantId);
-    console.log('[Middleware] Set tenant ID:', tenantId, '(Young Eagles)');
-    return response;
-  }
+    // Platform admin (superadmin) should use /admin
+    // Tenant admin (principal_admin) should use /dashboard
+    if (profile) {
+      const isPlatformAdmin = profile.role === 'superadmin' && !tenantId;
+      const isTenantAdmin = (profile.role === 'principal_admin' || profile.role === 'principal') && tenantId;
 
-  // Marketing site (production)
-  if (hostname === 'www.edusitepro.co.za' || hostname === 'edusitepro.co.za') {
-    // Let the default app routes handle this
-    return NextResponse.next();
-  }
+      // Redirect tenant admins from /admin to /dashboard
+      if (path.startsWith('/admin') && isTenantAdmin) {
+        return NextResponse.redirect(new URL('/dashboard', request.url));
+      }
 
-  // Admin portal (subdomain)
-  if (hostname === 'admin.edusitepro.co.za') {
-    // Route to admin pages
-    return NextResponse.next();
-  }
-
-  // Client portal (subdomain)
-  if (hostname === 'portal.edusitepro.co.za') {
-    // Route to portal pages
-    return NextResponse.next();
-  }
-
-  // Centre sites (*.sites.edusitepro.co.za or custom domains)
-  try {
-    const centre = await getCentreByDomain(hostname);
-
-    if (centre) {
-      // Store centre ID in header for use by pages
-      const response = NextResponse.next();
-      response.headers.set('x-tenant-id', centre.id);
-      return response;
+      // Redirect platform admins from /dashboard to /admin
+      if (path.startsWith('/dashboard') && isPlatformAdmin) {
+        return NextResponse.redirect(new URL('/admin', request.url));
+      }
     }
-  } catch (error) {
-    console.error('Middleware error:', error);
   }
 
-  // Default - let Next.js handle routing
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {

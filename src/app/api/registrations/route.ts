@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 import { supabase } from '@/lib/supabase';
+import { generateRegistrationConfirmation } from '@/lib/email-templates/registration-confirmation';
 
 /**
  * Server-side registration endpoint.
@@ -32,6 +33,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Generate unique payment reference
+    const timestamp = Date.now();
+    const randomSuffix = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const paymentReference = `REG-${new Date().getFullYear()}-${timestamp}-${randomSuffix}`;
+
     const insertPayload = {
       organization_id: payload.organization_id,
       student_first_name: payload.student_first_name,
@@ -47,6 +53,7 @@ export async function POST(request: NextRequest) {
       referral_source: payload.referral_source || null,
       early_bird: payload.early_bird || false,
       message: payload.message || null,
+      payment_reference: paymentReference,
       submission_date: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -62,8 +69,57 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    // Optionally fetch centre info for notifications (future enhancement)
-    // For now, just return success
+    // Send confirmation email to parent
+    try {
+      // Get organization details for school name
+      const { data: orgData } = await supabase
+        .from('organizations')
+        .select('name')
+        .eq('id', payload.organization_id)
+        .single();
+
+      const schoolName = orgData?.name || 'Young Eagles';
+      const studentName = `${payload.student_first_name} ${payload.student_last_name}`;
+
+      // Generate email content
+      const emailContent = generateRegistrationConfirmation({
+        parentName: payload.guardian_name,
+        parentEmail: payload.guardian_email,
+        studentName: studentName,
+        schoolName: schoolName,
+        registrationId: data.payment_reference || data.id, // Use payment reference as registration ID
+      });
+
+      // Call send-email Edge Function
+      const emailResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/send-email`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+          },
+          body: JSON.stringify({
+            to: payload.guardian_email,
+            subject: emailContent.subject,
+            body: emailContent.html,
+            is_html: true,
+            confirmed: true,
+          }),
+        }
+      );
+
+      if (!emailResponse.ok) {
+        const emailError = await emailResponse.json();
+        console.error('Failed to send confirmation email:', emailError);
+        // Don't fail the registration if email fails
+      } else {
+        console.log('Confirmation email sent successfully to:', payload.guardian_email);
+      }
+    } catch (emailError) {
+      console.error('Email sending error:', emailError);
+      // Don't fail the registration if email fails
+    }
 
     return NextResponse.json({ success: true, registration: data }, { status: 200 });
   } catch (err) {

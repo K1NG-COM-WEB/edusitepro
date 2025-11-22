@@ -6,13 +6,14 @@ import { createClient } from '@/lib/auth';
 import { LoginForm } from './LoginForm';
 
 async function signIn(
-  prevState: { error?: string } | undefined,
+  prevState: { error?: string; redirectTo?: string } | undefined,
   formData: FormData,
-): Promise<{ error?: string }> {
+): Promise<{ error?: string; redirectTo?: string }> {
   'use server';
 
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
+  const redirectTo = formData.get('redirectTo') as string || '/admin';
 
   const supabase = createClient();
   const { error } = await supabase.auth.signInWithPassword({
@@ -21,13 +22,17 @@ async function signIn(
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: error.message, redirectTo };
   }
 
-  redirect('/admin');
+  redirect(redirectTo);
 }
 
-export default function LoginPage() {
+export default function LoginPage({
+  searchParams,
+}: {
+  searchParams: { redirect?: string };
+}) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-stone-50 to-stone-100 px-4 py-8 sm:px-6 lg:px-8">
       <div className="w-full max-w-md">
@@ -39,7 +44,7 @@ export default function LoginPage() {
         <div className="rounded-xl sm:rounded-2xl bg-white p-6 sm:p-8 shadow-xl">
           <h2 className="mb-4 sm:mb-6 text-xl sm:text-2xl font-bold text-stone-900">Sign in</h2>
 
-          <LoginForm signIn={signIn} />
+          <LoginForm signIn={signIn} redirectTo={searchParams.redirect} />
 
           <div className="mt-6 text-center text-sm text-stone-600">
             <Link href="/" className="text-amber-600 hover:text-amber-700 underline-offset-2 hover:underline">

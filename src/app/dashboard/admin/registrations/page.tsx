@@ -23,7 +23,6 @@ interface Registration {
   registration_fee_amount: number | null;
   discount_amount: number | null;
   coupon_code: string | null;
-  proof_of_payment_url: string | null;
   status: 'pending' | 'approved' | 'rejected' | 'waitlisted';
   created_at: string;
   approved_at: string | null;
@@ -39,7 +38,6 @@ export default function RegistrationsPage() {
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending');
   const [searchTerm, setSearchTerm] = useState('');
   const [processing, setProcessing] = useState<string | null>(null);
-  const [selectedRegistration, setSelectedRegistration] = useState<Registration | null>(null);
 
   useEffect(() => {
     fetchRegistrations();
@@ -97,7 +95,6 @@ export default function RegistrationsPage() {
 
       alert(`✅ Registration approved! Welcome email sent to ${result.data.parent.email}`);
       fetchRegistrations(); // Refresh list
-      setSelectedRegistration(null);
     } catch (error: any) {
       console.error('Approval error:', error);
       alert(`❌ Error: ${error.message}`);
@@ -127,7 +124,6 @@ export default function RegistrationsPage() {
 
       alert('✅ Registration rejected');
       fetchRegistrations();
-      setSelectedRegistration(null);
     } catch (error: any) {
       console.error('Rejection error:', error);
       alert(`❌ Error: ${error.message}`);
@@ -323,7 +319,7 @@ export default function RegistrationsPage() {
                       <td className="whitespace-nowrap px-6 py-4 text-right text-sm">
                         <div className="flex justify-end gap-2">
                           <Link
-                            href={`/admin/registrations/${reg.id}`}
+                            href={`/dashboard/admin/registrations/${reg.id}`}
                             className="rounded-lg bg-blue-100 p-2 text-blue-700 hover:bg-blue-200"
                             title="View Details"
                           >
