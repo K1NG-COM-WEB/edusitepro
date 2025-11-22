@@ -216,6 +216,20 @@ export function generateRegistrationConfirmation(data: RegistrationConfirmationD
                 </tr>
               </table>
 
+              <!-- Upload Proof of Payment Button -->
+              <table role="presentation" style="width: 100%; margin: 30px 0;">
+                <tr>
+                  <td align="center">
+                    <a href="https://edusitepro.edudashpro.org.za/upload-payment?ref=${paymentReference || registrationId}" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-weight: 700; font-size: 16px; box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3); text-align: center;">
+                      📤 Upload Proof of Payment
+                    </a>
+                    <p style="margin: 12px 0 0; color: #666666; font-size: 13px; text-align: center;">
+                      Click the button above after making your payment
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
               <!-- Timeline -->
               <table role="presentation" style="width: 100%; background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin: 30px 0;">
                 <tr>
@@ -332,13 +346,18 @@ Bank: FNB
 Account Number: 62777403181
 Account Name: Young Eagles Home Care Centre
 
-⚠️ IMPORTANT: Use ${registrationId} as your payment reference!
+⚠️ IMPORTANT: Use ${shortReference} as your payment reference!
 This links your payment to your registration.
 
 PAYMENT METHOD FEES:
 - Bank Transfer (EFT): FREE ✅
 - ATM Deposit: +R20.00 processing fee
 - Cash Payment: +R20.00 handling fee
+
+UPLOAD PROOF OF PAYMENT
+-----------------------
+After making payment, upload your proof here:
+https://edusitepro.edudashpro.org.za/upload-payment?ref=${paymentReference || registrationId}
 
 EXPECTED TIMELINE
 ----------------
