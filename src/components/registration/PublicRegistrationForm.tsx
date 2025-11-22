@@ -401,7 +401,7 @@ export function PublicRegistrationForm({
       // Validate and apply coupon code if provided
       let campaignId = null;
       let discountAmount = 0;
-      const baseRegistrationFee = 300; // R300 base fee for Young Eagles
+      const baseRegistrationFee = 400; // R400 base fee for Young Eagles
       let finalAmount = baseRegistrationFee;
       
       if (formData.couponCode.trim()) {
@@ -431,10 +431,10 @@ export function PublicRegistrationForm({
               finalAmount = Math.max(0, baseRegistrationFee - campaign.discount_amount);
             }
           } else {
-            alert('Sorry, all discount slots have been claimed. Registration will proceed at full price (R300).');
+            alert('Sorry, all discount slots have been claimed. Registration will proceed at full price (R400).');
           }
         } else if (formData.couponCode.trim()) {
-          alert('Invalid or expired coupon code. Registration will proceed at full price (R300).');
+          alert('Invalid or expired coupon code. Registration will proceed at full price (R400).');
         }
       }
 
@@ -902,7 +902,7 @@ export function PublicRegistrationForm({
                 )}
               </div>
               <p className="mb-3 text-sm sm:text-base text-gray-700 dark:text-gray-300">
-                <span className="font-bold text-red-600">Was R300.00, now <span className="text-green-600">R150.00</span>!</span><br />
+                <span className="font-bold text-red-600">Was R400.00, now <span className="text-green-600">R200.00</span>!</span><br />
                 Be one of the first 50 families to register and get <strong className="text-purple-600 dark:text-purple-400">50% OFF</strong> your registration fee!
               </p>
                 <div className="rounded-lg bg-gradient-to-r from-purple-100 to-pink-100 p-3 dark:from-purple-900/30 dark:to-pink-900/30">

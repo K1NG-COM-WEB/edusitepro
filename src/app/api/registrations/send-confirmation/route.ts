@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       registrationId,
       registrationFee: finalAmount,
       discountApplied: discountApplied || false,
-      originalFee: 300,
+      originalFee: 400,
       paymentReference: reference,
     });
 
