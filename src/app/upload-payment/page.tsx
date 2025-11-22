@@ -98,11 +98,11 @@ function UploadPaymentContent() {
       // Update registration with POP URL
       const { error: updateError } = await supabase
         .from('registration_requests')
-        .update({
+        .update({{
           proof_of_payment_url: publicUrl,
           payment_date: new Date().toISOString(),
-          payment_amount: registration.registration_fee,
-        })
+          payment_amount: registration.registration_fee_amount,
+        }})
         .eq('id', registration.id);
       
       if (updateError) throw updateError;
@@ -235,7 +235,7 @@ function UploadPaymentContent() {
                 </div>
                 <div>
                   <dt className="text-blue-700 font-medium">Account Type</dt>
-                  <dd className="text-blue-900">Savings</dd>
+                  <dd className="text-blue-900">Business</dd>
                 </div>
               </dl>
               <p className="text-xs text-blue-700 mt-3">
