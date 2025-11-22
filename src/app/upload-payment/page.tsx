@@ -85,14 +85,14 @@ function UploadPaymentContent() {
       const filePath = `payment-proofs/${fileName}`;
       
       const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('public-uploads')
+        .from('payment-proofs')
         .upload(filePath, file);
       
       if (uploadError) throw uploadError;
       
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
-        .from('public-uploads')
+        .from('payment-proofs')
         .getPublicUrl(filePath);
       
       // Update registration with POP URL
@@ -211,7 +211,7 @@ function UploadPaymentContent() {
                 <div>
                   <dt className="text-sm font-medium text-gray-500">Amount to Pay</dt>
                   <dd className="mt-1 text-lg font-bold text-green-600">
-                    R {registration?.registration_fee?.toFixed(2)}
+                    R{registration?.registration_fee_amount?.toFixed(2) || '200.00'}
                   </dd>
                 </div>
               </dl>
