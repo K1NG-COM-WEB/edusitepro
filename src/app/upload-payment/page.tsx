@@ -82,7 +82,7 @@ function UploadPaymentContent() {
       // Upload file to Supabase Storage
       const fileExt = file.name.split('.').pop();
       const fileName = `${paymentRef}-${Date.now()}.${fileExt}`;
-      const filePath = `payment-proofs/${fileName}`;
+      const filePath = `payment-proofs/${fileName}`; // Include folder prefix
       
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('payment-proofs')
@@ -90,10 +90,8 @@ function UploadPaymentContent() {
       
       if (uploadError) throw uploadError;
       
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('payment-proofs')
-        .getPublicUrl(filePath);
+      // Get public URL - construct manually to ensure correct path
+      const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/payment-proofs/${filePath}`;
       
       // Update registration with POP URL
       const { error: updateError } = await supabase

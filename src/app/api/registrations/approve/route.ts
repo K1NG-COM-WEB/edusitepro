@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/auth';
+import { getServiceRoleClient } from '@/lib/supabase';
 import { generateParentWelcomeEmail } from '@/lib/email-templates/parent-welcome';
 
 /**
@@ -15,23 +16,25 @@ import { generateParentWelcomeEmail } from '@/lib/email-templates/parent-welcome
  * 5. Create student in students table
  * 6. Link student to organization (Young Eagles)
  * 7. Link parent to student
- * 8. Grant 14-day trial tier
+ * 8. Grant 7-day trial tier
  * 9. Update registration status to 'approved'
- * 10. Send welcome email with app download links
+ * 10. Send welcome email with PWA download link
  */
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient();
+    // Check authentication with user client
+    const authSupabase = createClient();
+    const { data: { session } } = await authSupabase.auth.getSession();
     
-    // 1. Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
-    if (authError || !user) {
+    if (!session) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
     }
+
+    // Use service role client for admin operations
+    const supabase = getServiceRoleClient();
 
     // Get request body
     const { registrationId } = await request.json();
@@ -72,41 +75,55 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Create parent account in Supabase Auth
+    // 3. Create parent account in Supabase Auth (or get existing)
     const tempPassword = generateSecurePassword();
     
-    const { data: authData, error: createAuthError } = await supabase.auth.admin.createUser({
-      email: registration.parent_email,
-      password: tempPassword,
-      email_confirm: true, // Auto-confirm email
-      user_metadata: {
-        full_name: registration.parent_name,
-        phone: registration.parent_phone,
-        role: 'parent',
-        organization_id: registration.organization_id,
-        onboarding_source: 'registration_approval',
-      }
-    });
+    // Check if user already exists
+    const { data: existingUsers } = await supabase.auth.admin.listUsers();
+    const existingUser = existingUsers?.users.find(u => u.email === registration.guardian_email);
+    
+    let authData;
+    if (existingUser) {
+      // User already exists, use existing account
+      authData = { user: existingUser };
+      console.log('Using existing user account:', registration.guardian_email);
+    } else {
+      // Create new user
+      const { data: newUserData, error: createAuthError } = await supabase.auth.admin.createUser({
+        email: registration.guardian_email,
+        password: tempPassword,
+        email_confirm: true, // Auto-confirm email
+        user_metadata: {
+          full_name: registration.guardian_name,
+          phone: registration.guardian_phone,
+          role: 'parent',
+          organization_id: registration.organization_id,
+          onboarding_source: 'registration_approval',
+        }
+      });
 
-    if (createAuthError || !authData.user) {
-      return NextResponse.json(
-        { error: `Failed to create account: ${createAuthError?.message}` },
-        { status: 500 }
-      );
+      if (createAuthError || !newUserData.user) {
+        return NextResponse.json(
+          { error: `Failed to create account: ${createAuthError?.message}` },
+          { status: 500 }
+        );
+      }
+      
+      authData = newUserData;
     }
 
-    // 4. Create profile in profiles table
+    // 4. Create or update profile in profiles table
     const { error: profileError } = await supabase
       .from('profiles')
-      .insert({
+      .upsert({
         id: authData.user.id,
-        email: registration.parent_email,
-        full_name: registration.parent_name,
-        phone: registration.parent_phone,
+        email: registration.guardian_email,
+        full_name: registration.guardian_name,
         role: 'parent',
-        preschool_id: registration.organization_id, // Link to Young Eagles
-        tier: 'free', // Start with free tier (14-day trial)
-        trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days from now
+        preschool_id: null, // Set to null if no preschool record
+        organization_id: registration.organization_id, // Link to organization
+      }, {
+        onConflict: 'id',
       });
 
     if (profileError) {
@@ -115,22 +132,22 @@ export async function POST(request: NextRequest) {
     }
 
     // 5. Create student in students table
-    const studentId = `${registration.school_code}-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`;
+    // Generate student ID: YE-YEAR-RANDOM (Young Eagles format)
+    const studentId = `YE-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`;
     
     const { data: studentData, error: studentError } = await supabase
       .from('students')
       .insert({
-        organization_id: registration.organization_id,
-        preschool_id: registration.organization_id, // Same for solo orgs
+        organization_id: registration.organization_id, // Young Eagles org ID from registration
+        preschool_id: null, // Set to null if no preschool record exists
         student_id: studentId,
-        first_name: registration.child_first_name || registration.child_name?.split(' ')[0] || '',
-        last_name: registration.child_last_name || registration.child_name?.split(' ').slice(1).join(' ') || '',
-        date_of_birth: registration.child_dob,
+        first_name: registration.student_first_name,
+        last_name: registration.student_last_name,
+        date_of_birth: registration.student_dob,
         status: 'enrolled',
         academic_year: '2026',
-        parent_id: authData.user.id, // Link to parent
-        home_address: registration.parent_address,
-        home_phone: registration.parent_phone,
+        home_address: registration.guardian_address,
+        home_phone: registration.guardian_phone,
       })
       .select()
       .single();
@@ -143,19 +160,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 6. Link parent to student via student_guardians table
+    const { error: guardianLinkError } = await supabase
+      .from('student_guardians')
+      .insert({
+        student_id: studentData.id,
+        guardian_id: authData.user.id,
+        relationship: 'guardian',
+        primary_contact: true,
+        can_pickup: true,
+      });
+
+    if (guardianLinkError) {
+      console.error('Guardian link error:', guardianLinkError);
+      // Continue anyway - link can be created later
+    }
+
     // 9. Update registration status
     const { error: updateError } = await supabase
       .from('registration_requests')
       .update({
         status: 'approved',
-        approved_at: new Date().toISOString(),
-        approved_by: user.id,
+        reviewed_date: new Date().toISOString(),
+        reviewed_by: session.user.id,
       })
       .eq('id', registrationId);
 
     if (updateError) {
       console.error('Registration update error:', updateError);
     }
+
+    // Define PWA URL for response - use edudashpro.org.za as the main app domain
+    const pwaUrl = 'https://edudashpro.org.za';
 
     // 10. Send welcome email
     try {
@@ -168,16 +204,16 @@ export async function POST(request: NextRequest) {
 
       const schoolName = orgData?.name || 'Young Eagles Education Centre';
 
-      // Generate email content
+      // Generate email content with PWA link and 7-day trial
       const emailContent = generateParentWelcomeEmail({
-        parentName: registration.parent_name,
-        parentEmail: registration.parent_email,
+        parentName: registration.guardian_name,
+        parentEmail: registration.guardian_email,
         tempPassword: tempPassword,
         studentName: `${studentData.first_name} ${studentData.last_name}`,
         studentId: studentId,
         schoolName: schoolName,
-        androidAppUrl: process.env.NEXT_PUBLIC_ANDROID_STORE_URL || 'https://play.google.com/store/apps/details?id=com.edudashpro',
-        iosAppUrl: process.env.NEXT_PUBLIC_IOS_STORE_URL,
+        androidAppUrl: pwaUrl, // Use PWA URL for now (no native app yet)
+        iosAppUrl: pwaUrl, // Same PWA works for iOS
       });
 
       // Call send-email Edge Function
@@ -190,7 +226,7 @@ export async function POST(request: NextRequest) {
             'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
           },
           body: JSON.stringify({
-            to: registration.parent_email,
+            to: registration.guardian_email,
             subject: emailContent.subject,
             body: emailContent.html, // Edge Function expects 'body' not 'html'
             is_html: true,
@@ -204,7 +240,7 @@ export async function POST(request: NextRequest) {
         console.error('Failed to send welcome email:', emailError);
         // Don't fail the approval if email fails - parent can still access app
       } else {
-        console.log('Welcome email sent successfully to:', registration.parent_email);
+        console.log('Welcome email sent successfully to:', registration.guardian_email);
       }
     } catch (emailError) {
       console.error('Email sending error:', emailError);
@@ -216,10 +252,10 @@ export async function POST(request: NextRequest) {
       message: 'Registration approved successfully',
       data: {
         parent: {
-          email: registration.parent_email,
+          email: registration.guardian_email,
           appDownloadLinks: {
-            android: process.env.NEXT_PUBLIC_ANDROID_STORE_URL,
-            ios: process.env.NEXT_PUBLIC_IOS_STORE_URL,
+            android: pwaUrl,
+            ios: pwaUrl,
           }
         },
         student: {

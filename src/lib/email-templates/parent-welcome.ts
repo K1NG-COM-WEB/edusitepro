@@ -98,9 +98,9 @@ export function generateParentWelcomeEmail(data: WelcomeEmailData): { subject: s
               <table role="presentation" style="width: 100%; background-color: #e8f5e9; border-radius: 8px; padding: 20px; margin: 30px 0; border-left: 4px solid #4caf50;">
                 <tr>
                   <td>
-                    <h3 style="margin: 0 0 10px; color: #2e7d32; font-size: 16px; font-weight: 600;">🎁 14-Day Free Trial Activated</h3>
+                    <h3 style="margin: 0 0 10px; color: #2e7d32; font-size: 16px; font-weight: 600;">🎁 7-Day Free Trial Activated</h3>
                     <p style="margin: 0; color: #555555; font-size: 14px; line-height: 1.6;">
-                      Enjoy full access to all EduDash Pro features for the next 14 days. Explore homework tracking, attendance monitoring, communication tools, and more!
+                      Enjoy full access to all EduDash Pro features for the next 7 days. Explore homework tracking, attendance monitoring, communication tools, and more!
                     </p>
                   </td>
                 </tr>
@@ -110,33 +110,31 @@ export function generateParentWelcomeEmail(data: WelcomeEmailData): { subject: s
               <h2 style="margin: 30px 0 20px; color: #333333; font-size: 20px; font-weight: 600;">Getting Started</h2>
               
               <ol style="margin: 0 0 30px; padding-left: 20px; color: #555555; font-size: 15px; line-height: 1.8;">
-                <li style="margin-bottom: 12px;">Download the EduDash Pro app from your app store</li>
-                <li style="margin-bottom: 12px;">Open the app and tap "Sign In"</li>
+                <li style="margin-bottom: 12px;">Click "Open EduDash Pro App" button below</li>
+                <li style="margin-bottom: 12px;">Tap "Sign In" in the app</li>
                 <li style="margin-bottom: 12px;">Enter your email and temporary password</li>
-                <li style="margin-bottom: 12px;">Follow the prompts to set a new password</li>
-                <li style="margin-bottom: 12px;">Start exploring your child's educational journey!</li>
+                <li style="margin-bottom: 12px;">Set a new secure password</li>
+                <li style="margin-bottom: 12px;">For easy access, install the app to your home screen</li>
+                <li style="margin-bottom: 12px;">Start tracking your child's progress!</li>
               </ol>
 
               <!-- Download Buttons -->
               <table role="presentation" style="width: 100%; margin: 30px 0;">
                 <tr>
                   <td align="center">
-                    <h3 style="margin: 0 0 20px; color: #333333; font-size: 18px; font-weight: 600;">Download the App</h3>
+                    <h3 style="margin: 0 0 20px; color: #333333; font-size: 18px; font-weight: 600;">Access the Parent App</h3>
                   </td>
                 </tr>
                 <tr>
                   <td align="center">
-                    <!-- Android Button -->
-                    <a href="${androidAppUrl}" style="display: inline-block; margin: 0 10px 15px; padding: 15px 30px; background-color: #3ddc84; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-                      📱 Download for Android
+                    <!-- PWA Button -->
+                    <a href="${androidAppUrl}" style="display: inline-block; margin: 0 10px 15px; padding: 15px 30px; background-color: #667eea; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                      🌐 Open EduDash Pro App
                     </a>
-                    ${iosAppUrl ? `
                     <br>
-                    <!-- iOS Button -->
-                    <a href="${iosAppUrl}" style="display: inline-block; margin: 0 10px 15px; padding: 15px 30px; background-color: #000000; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-                      🍎 Download for iOS
-                    </a>
-                    ` : ''}
+                    <p style="margin: 10px 0 0; color: #666666; font-size: 13px;">
+                      Works on all devices - Install to your home screen for the best experience!
+                    </p>
                   </td>
                 </tr>
               </table>
@@ -201,22 +199,23 @@ Student ID: ${studentId}
 
 ⚠️ Please change your password after your first login for security.
 
-14-DAY FREE TRIAL ACTIVATED
+7-DAY FREE TRIAL ACTIVATED
 ---------------------------
-Enjoy full access to all EduDash Pro features for the next 14 days!
+Enjoy full access to all EduDash Pro features for the next 7 days!
 
 GETTING STARTED
 --------------
-1. Download the EduDash Pro app from your app store
-2. Open the app and tap "Sign In"
+1. Open the EduDash Pro app: ${androidAppUrl}
+2. Tap "Sign In"
 3. Enter your email and temporary password
-4. Follow the prompts to set a new password
-5. Start exploring your child's educational journey!
+4. Set a new secure password
+5. Install the app to your home screen for easy access
+6. Start tracking your child's progress!
 
-DOWNLOAD THE APP
----------------
-Android: ${androidAppUrl}
-${iosAppUrl ? `iOS: ${iosAppUrl}` : ''}
+ACCESS THE APP
+--------------
+Open on any device: ${androidAppUrl}
+Works on phones, tablets, and computers!
 
 NEED HELP?
 ---------
