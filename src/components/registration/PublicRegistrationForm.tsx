@@ -244,7 +244,7 @@ export function PublicRegistrationForm({
 
         if (existingRegs && existingRegs.length > 0) {
           const existing = existingRegs[0];
-          const status = existing.status;
+          const status = existing?.status;
           
           if (status === 'approved') {
             setEmailValidation({
